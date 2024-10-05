@@ -1,0 +1,18 @@
+FROM postgres:15
+
+# Установка cron и других утилит
+RUN apt-get update && \
+    apt-get install -y cron && \
+    rm -rf /var/lib/apt/lists/*
+
+# Копирование скрипта восстановления, начальных данных и настройки cron
+COPY init-db.sh /docker-entrypoint-initdb.d/
+COPY initial_data.sql /docker-entrypoint-initdb.d/
+COPY backup-cron /etc/cron.d/backup-cron
+
+# Установка прав на выполнение для скриптов
+RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh && \
+    chmod 0644 /etc/cron.d/backup-cron
+
+# Запуск cron и PostgreSQL
+CMD ["sh", "-c", "cron && docker-entrypoint.sh postgres"]
