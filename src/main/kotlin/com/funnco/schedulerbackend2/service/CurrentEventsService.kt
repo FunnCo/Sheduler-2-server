@@ -123,7 +123,11 @@ class CurrentEventsService {
     fun deleteByTemplate(template: EventsTemplateEntity) {
         try {
             log.info("[$className] Start deleting current events by template: ${template.id}")
-            currentEventsRepository.deleteAllByTemplate(template)
+            val eventsToDelete = currentEventsRepository.getEventsCurrentEntitiesByTemplate(template)
+            eventsToDelete.forEach {
+                event -> noteService.deleteAllEventNotes(event.id.toString())
+            }
+            currentEventsRepository.deleteAll(eventsToDelete)
             log.info("[$className] End deleting current events by template: ${template.id}")
         } catch (any: Exception) {
             log.error("[$className] Error while deleting new events by template: ${template.id}", any)
