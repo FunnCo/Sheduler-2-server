@@ -27,8 +27,5 @@ open class EventsTemplateEntity {
     open var user: UserEntity? = null
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "week_day", columnDefinition = "week_day")
-    @ColumnTransformer(write = "?::week_day")
     open var weekDay: WeekDay? = null
-
 }
