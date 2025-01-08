@@ -100,7 +100,7 @@ class ScheduleResource {
 
     @PostMapping("/force/create_new")
     fun forceUpdateNew(){
-        currentEventsService.forceCreateFutureEventsByTemplate(3)
+        currentEventsService.forceCreateFutureEventsByTemplate(4)
     }
 
     @DeleteMapping("/force/delete_future")
