@@ -45,6 +45,7 @@ jobs:
           scp env/prod/Dockerfile ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/prod/.env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/common/* ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/common/
+          scp logback-spring.xml ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/common/
 
       - name: Restart and check docker-compose on server
         id: compose
