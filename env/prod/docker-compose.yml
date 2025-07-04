@@ -23,7 +23,7 @@ services:
 
   db:
     build:
-      context: ../common
+      context: ../../common
       dockerfile: Dockerfile-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
