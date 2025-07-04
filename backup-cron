@@ -1,1 +1,0 @@
-0 3 * * * pg_dump -U your_user -d your_db > /backups/db_backup_$(date +\%Y-\%m-\%d).sql
