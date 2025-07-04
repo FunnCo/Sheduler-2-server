@@ -42,6 +42,7 @@ jobs:
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "mkdir -p ~/app/env/prod ~/app/common"
           scp build/libs/*.jar ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/prod/docker-compose.yml ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
+          scp env/prod/Dockerfile ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/prod/.env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/common/* ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/common/
 
