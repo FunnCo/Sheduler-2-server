@@ -40,7 +40,7 @@ jobs:
           scp build/libs/*.jar ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/prod/docker-compose.yml ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
           scp env/prod/.env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
-          scp common/* ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/common/
+          scp env/common/* ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/common/
 
       - name: Restart and check docker-compose on server
         id: compose
