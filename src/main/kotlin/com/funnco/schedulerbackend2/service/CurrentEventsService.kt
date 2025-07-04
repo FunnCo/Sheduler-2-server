@@ -140,8 +140,9 @@ class CurrentEventsService {
         try {
             log.info("[$className] Start forcefully creating new notes from all templates (weeks: ${weeks})")
             val allTemplates = templateEventsRepository.findAll().toList()
-            for (currentWeekOffset in 1..weeks) {
+            for (currentWeekOffset in 0..weeks) {
                 val newEvents = allTemplates.stream()
+                    .filter { template -> template.weekDay!!.ordinal > LocalDate.now().dayOfWeek.ordinal || currentWeekOffset > 0}
                     .map { template -> mapTemplateToEvent(template, currentWeekOffset.toLong()) }
                     .toList()
                 currentEventsRepository.saveAll(newEvents)
