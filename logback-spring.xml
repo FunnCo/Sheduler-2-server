@@ -11,7 +11,7 @@
             </label>
             <message>
                 <pattern>
-                    {"level":"%level",  %d{yyyy-MM-dd HH:mm:ss.SSS}, "class":"%logger{36}", "thread":"%thread", "message": "%message", "requestId": "%X{X-Request-ID}"}
+                    {"level":"%level",  "timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}", "class":"%logger{36}", "thread":"%thread", "message": "%message", "requestId": "%X{X-Request-ID}"}
                 </pattern>
             </message>
         </format>

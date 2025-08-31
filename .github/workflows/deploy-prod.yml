@@ -1,0 +1,79 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build JAR
+        run: ./gradlew clean build --no-daemon
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: Create .env file for prod
+        run: |
+          mkdir -p env/prod
+          echo "${{ secrets.PROD_ENV }}" > env/prod/.env
+
+      - name: Copy files to server
+        run: |
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "mkdir -p ~/app/env/prod ~/app/common"
+          scp build/libs/*.jar ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
+          scp env/prod/docker-compose.yml ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
+          scp env/prod/Dockerfile ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
+          scp env/prod/.env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
+          scp env/common/* ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/common/
+          scp logback-spring.xml ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }}:~/app/env/prod/
+
+      - name: Restart and check docker-compose on server
+        id: compose
+        run: |
+          ATTEMPTS=0
+          until [ $ATTEMPTS -ge 3 ]
+          do
+            ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} '
+              cd ~/app/env/prod && \
+              docker compose down || true && \
+              docker compose up -d --build
+            '
+            echo "Waiting 10 seconds for containers to start..."
+            sleep 10
+            CONTAINER_STATUSES=$(ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_IP }} "cd ~/app/env/prod && docker compose ps --format '{{.Name}} {{.State}}'")
+            echo "$CONTAINER_STATUSES"
+            NOT_UP=$(echo "$CONTAINER_STATUSES" | awk '$2 != "running" {print $1}')
+            if [ -z "$NOT_UP" ]; then
+              echo "All containers are running."
+              exit 0
+            else
+              echo "Some containers are not running: $NOT_UP"
+              ATTEMPTS=$((ATTEMPTS+1))
+              if [ $ATTEMPTS -lt 3 ]; then
+                echo "Retrying in 10 seconds... (attempt $((ATTEMPTS+1))/3)"
+                sleep 10
+              fi
+            fi
+          done
+          echo "Deployment failed: Some containers did not start properly."
+          exit 1
