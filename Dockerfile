@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-alpine-jdk
+FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY /build/libs/Scheduler-backend-2-0.0.1-SNAPSHOT.jar /app/app.jar
 COPY logback-spring.xml /app/logback-spring.xml
