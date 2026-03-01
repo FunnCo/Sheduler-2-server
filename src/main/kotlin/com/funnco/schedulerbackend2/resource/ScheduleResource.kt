@@ -104,8 +104,8 @@ class ScheduleResource {
     }
 
     @PostMapping("/force/create_new")
-    fun forceCreateNewForNWeeks(weeksToUpdate: Int){
-        currentEventsService.forceCreateFutureEventsByTemplate(weeksToUpdate)
+    fun forceCreateNewForNWeeks(weeks: Int){
+        currentEventsService.forceCreateFutureEventsByTemplate(count)
     }
 
     @DeleteMapping("/force/delete_future")
