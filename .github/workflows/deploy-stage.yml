@@ -21,8 +21,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Run tests
+        run: ./gradlew test --no-daemon
+
       - name: Build JAR
-        run: ./gradlew clean build --no-daemon
+        run: ./gradlew clean build -x test --no-daemon
 
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.9.0
