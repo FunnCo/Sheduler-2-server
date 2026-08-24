@@ -32,6 +32,9 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("io.mockk:mockk:1.13.11")
+	testImplementation("com.ninja-squad:springmockk:4.0.2")
+	testImplementation("com.h2database:h2")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("com.github.loki4j:loki-logback-appender:1.5.2")
 //	implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.6.0"))
@@ -43,6 +46,12 @@ kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
 	}
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
+	maxParallelForks = 1
+	forkEvery = 0
 }
 
 
